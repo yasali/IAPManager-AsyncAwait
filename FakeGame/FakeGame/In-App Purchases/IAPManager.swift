@@ -9,7 +9,100 @@
 import Foundation
 import StoreKit
 
-class IAPManager: NSObject {
+actor IAPManagerWrapper {
+  // MARK: - Custom Types
+  
+  enum IAPManagerError: Error {
+      case noProductIDsFound
+      case noProductsFound
+      case paymentWasCancelled
+      case productRequestFailed
+  }
+  
+  static let shared = IAPManagerWrapper()
+
+  // MARK: - General Methods
+
+  private func getProductIDs() -> [String]? {
+    guard let url = Bundle.main.url(forResource: "IAP_ProductIDs", withExtension: "plist") else { return nil }
+    do {
+      let data = try Data(contentsOf: url)
+      let productIDs = try PropertyListSerialization.propertyList(from: data, options: .mutableContainersAndLeaves, format: nil) as? [String] ?? []
+      return productIDs
+    } catch {
+      print(error.localizedDescription)
+      return nil
+    }
+  }
+
+  func getPriceFormatted(for product: SKProduct) -> String? {
+      let formatter = NumberFormatter()
+      formatter.numberStyle = .currency
+      formatter.locale = product.priceLocale
+      return formatter.string(from: product.price)
+  }
+
+  func startObserving() {
+    IAPManager.shared.startObserving()
+  }
+
+  func stopObserving() {
+    IAPManager.shared.stopObserving()
+  }
+
+  func canMakePayments() -> Bool {
+    return IAPManager.shared.canMakePayments()
+  }
+    
+  // MARK: - Get IAP Products
+
+  func getProducts() async throws -> [SKProduct] {
+    guard getProductIDs() != nil else {
+      throw IAPManagerError.noProductIDsFound
+    }
+    
+    return try await withCheckedThrowingContinuation { continuation in
+      IAPManager.shared.getProducts { result in
+        switch result {
+          case .success(let products):
+            continuation.resume(returning: products)
+          case .failure(let error):
+            continuation.resume(throwing: error)
+        }
+      }
+    }
+  }
+  
+  func buy(product: SKProduct) async throws -> Bool {
+    guard SKPaymentQueue.canMakePayments() else {
+      throw IAPManagerError.paymentWasCancelled
+    }
+
+    return try await withCheckedThrowingContinuation { continuation in
+      IAPManager.shared.buy(product: product) { result in
+        switch result {
+        case .success(_): continuation.resume(returning: true)
+        case .failure(let error): continuation.resume(throwing: error)
+        }
+      }
+    }
+  }
+
+  func restorePurchases() async throws -> Bool {
+    return try await withCheckedThrowingContinuation { continuation in
+      IAPManager.shared.restorePurchases { result in
+        switch result {
+        case .success(let success): continuation.resume(returning: success)
+        case .failure(let error): continuation.resume(throwing: error)
+        }
+      }
+    }
+  }
+
+}
+
+
+fileprivate class IAPManager: NSObject {
     
     // MARK: - Custom Types
     
@@ -23,7 +116,7 @@ class IAPManager: NSObject {
     
     // MARK: - Properties
     
-    static let shared = IAPManager()
+    nonisolated(unsafe) static let shared = IAPManager()
     
     var onReceiveProductsHandler: ((Result<[SKProduct], IAPManagerError>) -> Void)?
     
