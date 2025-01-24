@@ -118,7 +118,7 @@ class ViewModel {
   func viewDidSetup() async {
     delegate?.willStartLongProcess()
     do {
-      let products = try await IAPManagerWrapper.shared.getProducts()
+      let products = try await IAPManager.shared.getProducts()
       self.model.products = products
     } catch {
       self.delegate?.showIAPRelatedError(error)
@@ -127,12 +127,12 @@ class ViewModel {
     
     
   func purchase(product: SKProduct) async -> Bool {
-    if await !IAPManagerWrapper.shared.canMakePayments() {
+    if await !IAPManager.shared.canMakePayments() {
         return false
     } else {
       self.delegate?.willStartLongProcess()
       do {
-        _ = try await IAPManagerWrapper.shared.buy(product: product)
+        _ = try await IAPManager.shared.buy(product: product)
         self.delegate?.didFinishLongProcess()
         self.updateGameDataWithPurchasedProduct(product)
       } catch {
@@ -146,7 +146,7 @@ class ViewModel {
   func restorePurchases() async {
     delegate?.willStartLongProcess()
     do {
-      let success = try await IAPManagerWrapper.shared.restorePurchases()
+      let success = try await IAPManager.shared.restorePurchases()
       if success {
           self.restoreUnlockedMaps()
           self.delegate?.didFinishRestoringPurchasedProducts()

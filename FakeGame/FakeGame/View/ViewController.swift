@@ -11,154 +11,152 @@ import StoreKit
 
 class ViewController: UIViewController {
 
-    // MARK: - IBOutlet Properties
+  // MARK: - IBOutlet Properties
+  
+  @IBOutlet weak var tableView: UITableView!
+  
+  @IBOutlet weak var overlayView: UIView!
+  
+  
+  // MARK: - Properties
+  
+  var viewModel = ViewModel()
     
-    @IBOutlet weak var tableView: UITableView!
     
-    @IBOutlet weak var overlayView: UIView!
+  // MARK: - View Controller Life Cycle
+  
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    // Do any additional setup after loading the view.
     
+    configureTableView()
     
-    // MARK: - Properties
-    
-    var viewModel = ViewModel()
-    
-    
-    // MARK: - View Controller Life Cycle
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view.
-        
-        configureTableView()
-        
-        overlayView.isHidden = true
-        viewModel.delegate = self
-    }
+    overlayView.isHidden = true
+    viewModel.delegate = self
+  }
 
-    
-    override func viewDidAppear(_ animated: Bool) {
-      super.viewDidAppear(animated)
-        
-      // Notify the ViewModel object that the View part is ready.
-      Task {
-        await viewModel.viewDidSetup()
-      }
+  
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+      
+    // Notify the ViewModel object that the View part is ready.
+    Task {
+      await viewModel.viewDidSetup()
     }
-    
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-      if #available(iOS 13.0, *) {
-        return .lightContent
-      } else {
-        // Fallback on earlier versions
-        return .default
-      }
+  }
+  
+  override var preferredStatusBarStyle: UIStatusBarStyle {
+    if #available(iOS 13.0, *) {
+      return .lightContent
+    } else {
+      // Fallback on earlier versions
+      return .default
     }
-    
-    
-    // MARK: - Custom Methods
-    
-    func configureTableView() {
-      self.tableView.delegate = self
-      self.tableView.dataSource = self
-      self.tableView.showsVerticalScrollIndicator = false
-      self.tableView.showsHorizontalScrollIndicator = false
-      self.tableView.backgroundColor = .clear
-      self.tableView.isScrollEnabled = false
-      self.tableView.tableFooterView = UIView(frame: CGRect.zero)
-      self.tableView.register(UINib(nibName: "ConsumablesCell", bundle: nil), forCellReuseIdentifier: "consumablesCell")
-      self.tableView.register(UINib(nibName: "NonConsumablesCell", bundle: nil), forCellReuseIdentifier: "nonConsumablesCell")
+  }
+  
+  
+  // MARK: - Custom Methods
+  
+  func configureTableView() {
+    self.tableView.delegate = self
+    self.tableView.dataSource = self
+    self.tableView.showsVerticalScrollIndicator = false
+    self.tableView.showsHorizontalScrollIndicator = false
+    self.tableView.backgroundColor = .clear
+    self.tableView.isScrollEnabled = false
+    self.tableView.tableFooterView = UIView(frame: CGRect.zero)
+    self.tableView.register(UINib(nibName: "ConsumablesCell", bundle: nil), forCellReuseIdentifier: "consumablesCell")
+    self.tableView.register(UINib(nibName: "NonConsumablesCell", bundle: nil), forCellReuseIdentifier: "nonConsumablesCell")
+  }
+  
+  
+  func showSingleAlert(withMessage message: String) {
+    let alertController = UIAlertController(title: "FakeGame", message: message, preferredStyle: .alert)
+    alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+    self.present(alertController, animated: true, completion: nil)
+  }
+  
+  // MARK: - IBAction Methods
+  
+  @IBAction func restorePurchases(_ sender: Any) {
+    Task {
+      await viewModel.restorePurchases()
     }
-    
-    
-    func showSingleAlert(withMessage message: String) {
-        let alertController = UIAlertController(title: "FakeGame", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-        self.present(alertController, animated: true, completion: nil)
-    }
-    
-    
-    // MARK: - IBAction Methods
-    
-    @IBAction func restorePurchases(_ sender: Any) {
-      Task {
-        await viewModel.restorePurchases()
-      }
-    }
-    
-    
-    // MARK: - Methods To Implement
-    
-    func showAlert(for product: SKProduct) {
-      Task {
-        guard let price = await IAPManagerWrapper.shared.getPriceFormatted(for: product) else { return }
-        
-        let alertController = UIAlertController(title: product.localizedTitle,
-                                                message: product.localizedDescription,
-                                                preferredStyle: .alert)
-        
-        alertController.addAction(UIAlertAction(title: "Buy now for \(price)", style: .default, handler: { (_) in
-          Task {
-            if await !self.viewModel.purchase(product: product) {
-                self.showSingleAlert(withMessage: "In-App Purchases are not allowed in this device.")
-            }
+  }
+  
+  
+  // MARK: - Methods To Implement
+  
+  func showAlert(for product: SKProduct) {
+    Task {
+      guard let price = await IAPManager.shared.getPriceFormatted(for: product) else { return }
+      
+      let alertController = UIAlertController(title: product.localizedTitle,
+                                              message: product.localizedDescription,
+                                              preferredStyle: .alert)
+      
+      alertController.addAction(UIAlertAction(title: "Buy now for \(price)", style: .default, handler: { (_) in
+        Task {
+          if await !self.viewModel.purchase(product: product) {
+              self.showSingleAlert(withMessage: "In-App Purchases are not allowed in this device.")
           }
-            
-        }))
-        
-        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        self.present(alertController, animated: true, completion: nil)
-      }
+        }
+          
+      }))
+      
+      alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+      self.present(alertController, animated: true, completion: nil)
     }
+  }
 }
 
 
 // MARK: - ViewModelDelegate
-extension ViewController: @preconcurrency ViewModelDelegate {
-    func toggleOverlay(shouldShow: Bool) {
-      overlayView.isHidden = !shouldShow
+extension ViewController: ViewModelDelegate {
+  func toggleOverlay(shouldShow: Bool) {
+    overlayView.isHidden = !shouldShow
+  }
+  
+  func willStartLongProcess() {
+    overlayView.isHidden = false
+  }
+  
+  func didFinishLongProcess() {
+    overlayView.isHidden = true
+  }
+  
+  func showIAPRelatedError(_ error: Error) {
+    let message = error.localizedDescription
+    
+    // In a real app you might want to check what exactly the
+    // error is and display a more user-friendly message.
+    // For example:
+    /*
+    switch error {
+    case .noProductIDsFound: message = NSLocalizedString("Unable to initiate in-app purchases.", comment: "")
+    case .noProductsFound: message = NSLocalizedString("Nothing was found to buy.", comment: "")
+    // Add more cases...
+    default: message = ""
     }
-    
-    func willStartLongProcess() {
-      overlayView.isHidden = false
-    }
-    
-    func didFinishLongProcess() {
-      overlayView.isHidden = true
-    }
-    
-    
-    func showIAPRelatedError(_ error: Error) {
-      let message = error.localizedDescription
+    */
       
-      // In a real app you might want to check what exactly the
-      // error is and display a more user-friendly message.
-      // For example:
-      /*
-      switch error {
-      case .noProductIDsFound: message = NSLocalizedString("Unable to initiate in-app purchases.", comment: "")
-      case .noProductsFound: message = NSLocalizedString("Nothing was found to buy.", comment: "")
-      // Add more cases...
-      default: message = ""
-      }
-      */
-        
-      showSingleAlert(withMessage: message)
-    }
-    
-    
-    func shouldUpdateUI() {
-      tableView.reloadData()
-    }
-    
-    
-    func didFinishRestoringPurchasesWithZeroProducts() {
-      showSingleAlert(withMessage: "There are no purchased items to restore.")
-    }
-    
-    
-    func didFinishRestoringPurchasedProducts() {
-      showSingleAlert(withMessage: "All previous In-App Purchases have been restored!")
-    }
+    showSingleAlert(withMessage: message)
+  }
+  
+  
+  func shouldUpdateUI() {
+    tableView.reloadData()
+  }
+  
+  
+  func didFinishRestoringPurchasesWithZeroProducts() {
+    showSingleAlert(withMessage: "There are no purchased items to restore.")
+  }
+  
+  
+  func didFinishRestoringPurchasedProducts() {
+    showSingleAlert(withMessage: "All previous In-App Purchases have been restored!")
+  }
 }
 
 
@@ -223,10 +221,10 @@ extension ViewController: UITableViewDataSource {
   
   func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
     if indexPath.row != 2 {
-        return 120.0
+      return 120.0
     } else {
-        return 150.0
-      }
+      return 150.0
+    }
   }
 }
 
