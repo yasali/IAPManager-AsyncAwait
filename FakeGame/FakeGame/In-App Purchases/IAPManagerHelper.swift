@@ -43,15 +43,15 @@ actor IAPManagerWrapper {
   }
 
   func startObserving() {
-    IAPManager.shared.startObserving()
+    IAPManagerHelper.shared.startObserving()
   }
 
   func stopObserving() {
-    IAPManager.shared.stopObserving()
+    IAPManagerHelper.shared.stopObserving()
   }
 
   func canMakePayments() -> Bool {
-    return IAPManager.shared.canMakePayments()
+    return IAPManagerHelper.shared.canMakePayments()
   }
     
   // MARK: - Get IAP Products
@@ -62,7 +62,7 @@ actor IAPManagerWrapper {
     }
     
     return try await withCheckedThrowingContinuation { continuation in
-      IAPManager.shared.getProducts { result in
+      IAPManagerHelper.shared.getProducts { result in
         switch result {
           case .success(let products):
             continuation.resume(returning: products)
@@ -79,7 +79,7 @@ actor IAPManagerWrapper {
     }
 
     return try await withCheckedThrowingContinuation { continuation in
-      IAPManager.shared.buy(product: product) { result in
+      IAPManagerHelper.shared.buy(product: product) { result in
         switch result {
         case .success(_): continuation.resume(returning: true)
         case .failure(let error): continuation.resume(throwing: error)
@@ -90,7 +90,7 @@ actor IAPManagerWrapper {
 
   func restorePurchases() async throws -> Bool {
     return try await withCheckedThrowingContinuation { continuation in
-      IAPManager.shared.restorePurchases { result in
+      IAPManagerHelper.shared.restorePurchases { result in
         switch result {
         case .success(let success): continuation.resume(returning: success)
         case .failure(let error): continuation.resume(throwing: error)
@@ -102,7 +102,7 @@ actor IAPManagerWrapper {
 }
 
 
-fileprivate class IAPManager: NSObject {
+fileprivate class IAPManagerHelper: NSObject {
     
     // MARK: - Custom Types
     
@@ -116,7 +116,7 @@ fileprivate class IAPManager: NSObject {
     
     // MARK: - Properties
     
-    nonisolated(unsafe) static let shared = IAPManager()
+    nonisolated(unsafe) static let shared = IAPManagerHelper()
     
     var onReceiveProductsHandler: ((Result<[SKProduct], IAPManagerError>) -> Void)?
     
@@ -215,7 +215,7 @@ fileprivate class IAPManager: NSObject {
 
 
 // MARK: - SKPaymentTransactionObserver
-extension IAPManager: SKPaymentTransactionObserver {
+extension IAPManagerHelper: SKPaymentTransactionObserver {
     func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
         transactions.forEach { (transaction) in
             switch transaction.transactionState {
@@ -271,7 +271,7 @@ extension IAPManager: SKPaymentTransactionObserver {
 
 
 // MARK: - SKProductsRequestDelegate
-extension IAPManager: SKProductsRequestDelegate {
+extension IAPManagerHelper: SKProductsRequestDelegate {
     func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
         // Get the available products contained in the response.
         let products = response.products
@@ -302,7 +302,7 @@ extension IAPManager: SKProductsRequestDelegate {
 
 
 // MARK: - IAPManagerError Localized Error Descriptions
-extension IAPManager.IAPManagerError: LocalizedError {
+extension IAPManagerHelper.IAPManagerError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .noProductIDsFound: return "No In-App Purchase product identifiers were found."
