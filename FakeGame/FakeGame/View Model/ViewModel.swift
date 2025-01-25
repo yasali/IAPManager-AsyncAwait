@@ -44,10 +44,7 @@ class ViewModel {
   
   // MARK: - Init
       
-  init() {
-
-  }
-  
+  init() {}
   
   // MARK: - Fileprivate Methods
   
@@ -69,7 +66,6 @@ class ViewModel {
     delegate?.shouldUpdateUI()
   }
   
-  
   fileprivate func restoreUnlockedMaps() {
     // Mark all maps as unlocked.
     model.gameData.didUnlockAllMaps = true
@@ -78,8 +74,6 @@ class ViewModel {
     _ = model.gameData.update()
     delegate?.shouldUpdateUI()
   }
-  
-  
   
   // MARK: - Internal Methods
   
@@ -100,18 +94,15 @@ class ViewModel {
     return product
   }
   
-  
   func didConsumeLive() {
     model.gameData.extraLives -= 1
     _ = model.gameData.update()
   }
   
-  
   func didConsumeSuperPower() {
     model.gameData.superPowers -= 1
     _ = model.gameData.update()
   }
-  
   
   // MARK: - Methods To Implement
     
@@ -119,12 +110,12 @@ class ViewModel {
     delegate?.willStartLongProcess()
     do {
       let products = try await IAPManager.shared.getProducts()
+      self.delegate?.didFinishLongProcess()
       self.model.products = products
     } catch {
       self.delegate?.showIAPRelatedError(error)
     }
   }
-    
     
   func purchase(product: SKProduct) async -> Bool {
     if await !IAPManager.shared.canMakePayments() {
@@ -147,6 +138,7 @@ class ViewModel {
     delegate?.willStartLongProcess()
     do {
       let success = try await IAPManager.shared.restorePurchases()
+      self.delegate?.didFinishLongProcess()
       if success {
           self.restoreUnlockedMaps()
           self.delegate?.didFinishRestoringPurchasedProducts()
@@ -156,6 +148,5 @@ class ViewModel {
     } catch {
       self.delegate?.showIAPRelatedError(error)
     }
-    
   }
 }

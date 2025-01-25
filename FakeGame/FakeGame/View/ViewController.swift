@@ -126,6 +126,7 @@ extension ViewController: ViewModelDelegate {
   }
   
   func showIAPRelatedError(_ error: Error) {
+    overlayView.isHidden = true
     let message = error.localizedDescription
     
     // In a real app you might want to check what exactly the
