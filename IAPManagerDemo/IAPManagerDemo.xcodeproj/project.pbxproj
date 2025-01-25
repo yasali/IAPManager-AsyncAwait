@@ -24,7 +24,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		C0A29DC523559B9400D3B51D /* FakeGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FakeGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0A29DC523559B9400D3B51D /* IAPManagerDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IAPManagerDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0A29DC823559B9400D3B51D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C0A29DCA23559B9400D3B51D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		C0A29DCC23559B9400D3B51D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -56,7 +56,7 @@
 		C0A29DBC23559B9400D3B51D = {
 			isa = PBXGroup;
 			children = (
-				C0A29DC723559B9400D3B51D /* FakeGame */,
+				C0A29DC723559B9400D3B51D /* IAPManagerDemo */,
 				C0A29DC623559B9400D3B51D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -64,12 +64,12 @@
 		C0A29DC623559B9400D3B51D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C0A29DC523559B9400D3B51D /* FakeGame.app */,
+				C0A29DC523559B9400D3B51D /* IAPManagerDemo.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		C0A29DC723559B9400D3B51D /* FakeGame */ = {
+		C0A29DC723559B9400D3B51D /* IAPManagerDemo */ = {
 			isa = PBXGroup;
 			children = (
 				C0A29DE023559BEE00D3B51D /* In-App Purchases */,
@@ -83,7 +83,7 @@
 				C0A29DD323559B9600D3B51D /* LaunchScreen.storyboard */,
 				C0A29DD623559B9600D3B51D /* Info.plist */,
 			);
-			path = FakeGame;
+			path = IAPManagerDemo;
 			sourceTree = "<group>";
 		};
 		C0A29DDC23559BB100D3B51D /* Model */ = {
@@ -142,9 +142,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		C0A29DC423559B9400D3B51D /* FakeGame */ = {
+		C0A29DC423559B9400D3B51D /* IAPManagerDemo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C0A29DD923559B9600D3B51D /* Build configuration list for PBXNativeTarget "FakeGame" */;
+			buildConfigurationList = C0A29DD923559B9600D3B51D /* Build configuration list for PBXNativeTarget "IAPManagerDemo" */;
 			buildPhases = (
 				C0A29DC123559B9400D3B51D /* Sources */,
 				C0A29DC223559B9400D3B51D /* Frameworks */,
@@ -154,9 +154,9 @@
 			);
 			dependencies = (
 			);
-			name = FakeGame;
+			name = IAPManagerDemo;
 			productName = FakeGame;
-			productReference = C0A29DC523559B9400D3B51D /* FakeGame.app */;
+			productReference = C0A29DC523559B9400D3B51D /* IAPManagerDemo.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -174,7 +174,7 @@
 					};
 				};
 			};
-			buildConfigurationList = C0A29DC023559B9400D3B51D /* Build configuration list for PBXProject "FakeGame" */;
+			buildConfigurationList = C0A29DC023559B9400D3B51D /* Build configuration list for PBXProject "IAPManagerDemo" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -187,7 +187,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				C0A29DC423559B9400D3B51D /* FakeGame */,
+				C0A29DC423559B9400D3B51D /* IAPManagerDemo */,
 			);
 		};
 /* End PBXProject section */
@@ -366,7 +366,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9BTCAVN99V;
-				INFOPLIST_FILE = FakeGame/Info.plist;
+				INFOPLIST_FILE = IAPManagerDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -384,7 +384,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9BTCAVN99V;
-				INFOPLIST_FILE = FakeGame/Info.plist;
+				INFOPLIST_FILE = IAPManagerDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -399,7 +399,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C0A29DC023559B9400D3B51D /* Build configuration list for PBXProject "FakeGame" */ = {
+		C0A29DC023559B9400D3B51D /* Build configuration list for PBXProject "IAPManagerDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C0A29DD723559B9600D3B51D /* Debug */,
@@ -408,7 +408,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C0A29DD923559B9600D3B51D /* Build configuration list for PBXNativeTarget "FakeGame" */ = {
+		C0A29DD923559B9600D3B51D /* Build configuration list for PBXNativeTarget "IAPManagerDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C0A29DDA23559B9600D3B51D /* Debug */,
