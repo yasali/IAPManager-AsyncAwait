@@ -19,10 +19,10 @@ actor IAPManager {
   }
 
   func getPriceFormatted(for product: SKProduct) -> String? {
-      let formatter = NumberFormatter()
-      formatter.numberStyle = .currency
-      formatter.locale = product.priceLocale
-      return formatter.string(from: product.price)
+    let formatter = NumberFormatter()
+    formatter.numberStyle = .currency
+    formatter.locale = product.priceLocale
+    return formatter.string(from: product.price)
   }
 
   func startObserving() {
@@ -86,52 +86,46 @@ actor IAPManager {
 
 fileprivate class IAPManagerHelper: NSObject {
     
-    // MARK: - Custom Types
-    
-    enum IAPManagerError: Error {
-        case noProductIDsFound
-        case noProductsFound
-        case paymentWasCancelled
-        case productRequestFailed
-    }
+  // MARK: - Custom Types
+  
+  enum IAPManagerError: Error {
+    case noProductIDsFound
+    case noProductsFound
+    case paymentWasCancelled
+    case productRequestFailed
+  }
 
-    
-    // MARK: - Properties
-    
-    nonisolated(unsafe) static let shared = IAPManagerHelper()
-    
-    var onReceiveProductsHandler: ((Result<[SKProduct], IAPManagerError>) -> Void)?
-    
-    var onBuyProductHandler: ((Result<Bool, Error>) -> Void)?
-    
-    var totalRestoredPurchases = 0
-        
-    
-    // MARK: - Init
-    
-    private override init() {
-      super.init()
-    }
-    
-    
-    // MARK: - General Methods
-    
-    fileprivate func startObserving() {
-      SKPaymentQueue.default().add(self)
-    }
+  // MARK: - Properties
+  
+  nonisolated(unsafe) static let shared = IAPManagerHelper()
+  
+  var onReceiveProductsHandler: ((Result<[SKProduct], IAPManagerError>) -> Void)?
+  
+  var onBuyProductHandler: ((Result<Bool, Error>) -> Void)?
+  
+  var totalRestoredPurchases = 0
+      
+  // MARK: - Init
+  
+  private override init() {
+    super.init()
+  }
+  
+  // MARK: - General Methods
+  
+  fileprivate func startObserving() {
+    SKPaymentQueue.default().add(self)
+  }
 
-
-    fileprivate func stopObserving() {
-      SKPaymentQueue.default().remove(self)
-    }
-    
-    
-    fileprivate func canMakePayments() -> Bool {
-      return SKPaymentQueue.canMakePayments()
-    }
-    
-    
-    // MARK: - Get IAP Products
+  fileprivate func stopObserving() {
+    SKPaymentQueue.default().remove(self)
+  }
+  
+  fileprivate func canMakePayments() -> Bool {
+    return SKPaymentQueue.canMakePayments()
+  }
+  
+  // MARK: - Get IAP Products
     
   func getProducts(productIDs: [String], withHandler productsReceiveHandler: @escaping (_ result: Result<[SKProduct], IAPManagerError>) -> Void) {
     // Keep the handler (closure) that will be called when requesting for
@@ -157,7 +151,6 @@ fileprivate class IAPManagerHelper: NSObject {
     // Keep the completion handler.
     onBuyProductHandler = handler
   }
-  
   
   func restorePurchases(withHandler handler: @escaping ((_ result: Result<Bool, Error>) -> Void)) {
     onBuyProductHandler = handler
